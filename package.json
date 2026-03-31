@@ -8,14 +8,14 @@
       "path": "plugins/plex-search",
       "name": "Plex Search",
       "description": "Search for media in your Plex library",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "type": "command"
     },
     {
       "path": "plugins/auto-bang",
       "name": "Auto Bang",
       "description": "Autocomplete !bangs as you type",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "type": "slot"
     }
   ]
