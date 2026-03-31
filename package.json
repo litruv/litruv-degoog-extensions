@@ -1,0 +1,22 @@
+{
+  "name": "litruv-degoog-extensions",
+  "description": "Small collection of plugins by Litruv",
+  "repo-image": "https://avatars.githubusercontent.com/u/3798007?s=200&v=4",
+  "author": "litruv",
+  "plugins": [
+    {
+      "path": "plugins/plex-search",
+      "name": "Plex Search",
+      "description": "Search for media in your Plex library",
+      "version": "1.0.0",
+      "type": "command"
+    },
+    {
+      "path": "plugins/auto-bang",
+      "name": "Auto Bang",
+      "description": "Autocomplete !bangs as you type",
+      "version": "1.0.0",
+      "type": "slot"
+    }
+  ]
+}
