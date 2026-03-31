@@ -1,13 +1,10 @@
 /**
  * Auto Bang — bang command autocomplete plugin.
- * The real feature lives in script.js which is injected globally on every page.
- * This minimal bang command is required so degoog loads the plugin and serves script.js.
  */
 export default {
   name: "Auto Bang",
   description: "Type ! in the search box to get instant command suggestions as you type.",
   trigger: "autobang",
-  aliases: ["bang"],
   settingsSchema: [
     {
       key: "maxSuggestions",
@@ -30,7 +27,9 @@ export default {
   execute() {
     return {
       title: "Auto Bang",
-      html: `<div style="padding:12px;font-size:0.85rem;color:var(--text-secondary)">Start typing <code>!</code> in the search box — Auto Bang will suggest commands automatically.</div>`,
+      html: `<div style="padding:12px;font-size:0.85rem;color:var(--text-secondary)">
+        <img src="/plugins/auto-bang/pipeman-banging.gif" alt="Auto Bang" style="display:block;max-width:100%;border-radius:8px;margin-bottom:8px;" />
+      </div>`,
     };
   },
 };
