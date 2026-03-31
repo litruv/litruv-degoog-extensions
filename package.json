@@ -15,7 +15,7 @@
       "path": "plugins/auto-bang",
       "name": "Auto Bang",
       "description": "Autocomplete !bangs as you type",
-      "version": "1.1.0",
+      "version": "1.1.1",
       "type": "slot"
     }
   ]

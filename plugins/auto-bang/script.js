@@ -79,6 +79,9 @@
     if (input.dataset.bangAcInit) return;
     input.dataset.bangAcInit = "1";
 
+    const effectivePosition = input.id === "results-search-input" ? "below" : dropdownPosition;
+
+
     const dropdown = document.createElement("div");
     dropdown.className = "bang-ac-dropdown";
     dropdown.style.display = "none";
@@ -98,7 +101,7 @@
       if (!commands.length) { hide(); return; }
       selectedIdx = -1;
 
-      if (dropdownPosition === "below") {
+      if (effectivePosition === "below") {
         dropdown.style.bottom = "";
         dropdown.style.top = "calc(100% + 4px)";
       } else {
@@ -106,7 +109,7 @@
         dropdown.style.bottom = "calc(100% + 4px)";
       }
 
-      const display = dropdownPosition === "below" ? commands : [...commands].reverse();
+      const display = effectivePosition === "below" ? commands : [...commands].reverse();
       dropdown.innerHTML = display.map((c) =>
         `<div class="bang-ac-item" data-trigger="${c.trigger}">
           <span class="bang-ac-trigger">!${c.trigger}</span>
