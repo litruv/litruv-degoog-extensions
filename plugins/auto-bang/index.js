@@ -27,7 +27,7 @@ export default {
   execute() {
     return {
       title: "Auto Bang",
-      html: `<div style="padding:12px;font-size:0.85rem;color:var(--text-secondary)">
+      html: `<div style="padding:12px">
         <img src="/plugins/auto-bang/pipeman-banging.gif" alt="Auto Bang" style="display:block;max-width:100%;border-radius:8px;margin-bottom:8px;" />
       </div>`,
     };
