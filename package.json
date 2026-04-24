@@ -15,7 +15,14 @@
       "path": "plugins/auto-bang",
       "name": "Auto Bang",
       "description": "Autocomplete !bangs as you type",
-      "version": "1.1.1",
+      "version": "1.1.2",
+      "type": "slot"
+    },
+    {
+      "path": "plugins/link-target",
+      "name": "Link Target",
+      "description": "Sets the target attribute for links",
+      "version": "1.0.0",
       "type": "slot"
     }
   ]
