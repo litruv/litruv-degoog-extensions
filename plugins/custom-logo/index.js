@@ -43,6 +43,31 @@ const _saveDimensions = async (dims) => {
 };
 
 let hideLogoManagement = false;
+let settingsLoaded = false;
+
+/**
+ * Load hideLogoManagement from saved plugin settings
+ */
+const _loadSettings = async () => {
+  if (settingsLoaded) return;
+  settingsLoaded = true;
+  try {
+    const settingsPath = join(process.cwd(), "data", "plugin-settings.json");
+    const raw = await readFile(settingsPath, "utf-8");
+    const allSettings = JSON.parse(raw);
+    const pluginSettings = allSettings?.["plugin-custom-logo"];
+    if (pluginSettings) {
+      const val = pluginSettings.hideLogoManagement;
+      // Handle both boolean and string values
+      hideLogoManagement = val === true || val === "true";
+    }
+  } catch {
+    // Settings file doesn't exist or can't be read, use default
+  }
+};
+
+// Load settings on first access
+_loadSettings().catch(() => {});
 
 export default {
   name: "Custom Logo",
@@ -60,45 +85,32 @@ export default {
   ],
 
   configure(settings) {
-    if (typeof settings?.hideLogoManagement === "boolean") {
-      hideLogoManagement = settings.hideLogoManagement;
-    }
+    const val = settings?.hideLogoManagement;
+    // Handle both boolean and string values
+    hideLogoManagement = val === true || val === "true";
+    settingsLoaded = true;
   },
 
   async execute() {
-    const [current, dims] = await Promise.all([_load(), _loadDimensions()]);
-    const { homeMaxHeight, homeMaxWidth, searchMaxHeight, searchMaxWidth } = dims;
-
+    await _loadSettings();
+    
     if (hideLogoManagement) {
-      const homePreviewImg = current
-        ? `<img id="custom-logo-home-preview-img" src="${current}" alt="Home logo preview" style="max-height:${homeMaxHeight}px;max-width:${homeMaxWidth}px;object-fit:contain;display:block;" />`
-        : `<img id="custom-logo-home-preview-img" src="" alt="Home logo preview" style="max-height:${homeMaxHeight}px;max-width:${homeMaxWidth}px;object-fit:contain;display:none;" />`;
-
       return {
         title: "Custom Logo",
         html: `
-          <div id="custom-logo-card" style="padding:14px 16px;display:flex;flex-direction:column;gap:12px;">
-            <div style="background:rgba(0,0,0,0.15);border-radius:8px;padding:20px 16px 24px;display:flex;flex-direction:column;align-items:center;gap:18px;">
-              <span style="font-size:0.7rem;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;color:var(--text-secondary);align-self:flex-start;">Home page preview</span>
-              ${homePreviewImg}
-              <div style="width:100%;max-width:584px;display:flex;flex-direction:column;align-items:stretch;gap:18px;">
-                <div style="display:flex;align-items:center;width:100%;border-radius:24px;border:1px solid rgba(255,255,255,0.15);background:var(--bg-secondary,#1e1e2e);padding:10px 16px;gap:12px;">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="opacity:0.4;flex-shrink:0;">
-                    <circle cx="11" cy="11" r="8"/>
-                    <path d="M21 21l-4.35-4.35"/>
-                  </svg>
-                  <span style="flex:1;font-size:0.95rem;color:var(--text-secondary);user-select:none;"></span>
-                </div>
-                <div style="display:flex;gap:11px;justify-content:center;">
-                  <span style="padding:10px 20px;border-radius:4px;font-size:0.875rem;background:rgba(255,255,255,0.05);color:var(--text-primary);border:1px solid rgba(255,255,255,0.1);user-select:none;font-weight:500;">degoog Search</span>
-                  <span style="padding:10px 20px;border-radius:4px;font-size:0.875rem;background:rgba(255,255,255,0.05);color:var(--text-primary);border:1px solid rgba(255,255,255,0.1);user-select:none;font-weight:500;">I'm Feeling Lucky</span>
-                </div>
-              </div>
-            </div>
-            <p style="font-size:0.82rem;color:var(--text-secondary);margin:0;text-align:center;font-style:italic;">Logo management is disabled on this instance.</p>
+          <div id="custom-logo-card" style="padding:20px 16px;display:flex;flex-direction:column;align-items:center;gap:12px;">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="opacity:0.3;">
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+              <circle cx="8.5" cy="8.5" r="1.5"/>
+              <polyline points="21 15 16 10 5 21"/>
+            </svg>
+            <p style="font-size:0.9rem;color:var(--text-secondary);margin:0;text-align:center;">Logo management is disabled on this instance.</p>
           </div>`,
       };
     }
+
+    const [current, dims] = await Promise.all([_load(), _loadDimensions()]);
+    const { homeMaxHeight, homeMaxWidth, searchMaxHeight, searchMaxWidth } = dims;
 
     const previewHtml = current
       ? `<img id="custom-logo-preview" src="${current}" alt="Current logo" style="max-height:80px;max-width:220px;object-fit:contain;display:block;border-radius:6px;border:1px solid rgba(255,255,255,0.1);padding:4px 8px;background:rgba(0,0,0,0.2);" />`
@@ -167,6 +179,7 @@ export default {
       method: "get",
       path: "/settings",
       handler: async () => {
+        await _loadSettings();
         return new Response(JSON.stringify({ hideLogoManagement }), {
           status: 200,
           headers: { "Content-Type": "application/json" },
@@ -188,6 +201,14 @@ export default {
       method: "post",
       path: "/logo",
       handler: async (req) => {
+        await _loadSettings();
+        if (hideLogoManagement) {
+          return new Response(JSON.stringify({ error: "Logo management is disabled" }), {
+            status: 403,
+            headers: { "Content-Type": "application/json" },
+          });
+        }
+
         let body;
         try {
           body = await req.json();
@@ -245,6 +266,14 @@ export default {
       method: "post",
       path: "/dimensions",
       handler: async (req) => {
+        await _loadSettings();
+        if (hideLogoManagement) {
+          return new Response(JSON.stringify({ error: "Dimension management is disabled" }), {
+            status: 403,
+            headers: { "Content-Type": "application/json" },
+          });
+        }
+
         let body;
         try {
           body = await req.json();

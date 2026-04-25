@@ -19,7 +19,9 @@
   fetch("/api/plugin/custom-logo/settings")
     .then((r) => r.json())
     .then((d) => {
-      hideLogoManagement = d?.hideLogoManagement === true;
+      // Handle both boolean and string values
+      const val = d?.hideLogoManagement;
+      hideLogoManagement = val === true || val === "true";
     })
     .catch(() => {});
 
