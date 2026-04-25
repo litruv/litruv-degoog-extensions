@@ -24,6 +24,13 @@
       "description": "Sets the target attribute for links",
       "version": "1.0.0",
       "type": "slot"
+    },
+    {
+      "path": "plugins/custom-logo",
+      "name": "Custom Logo",
+      "description": "Replace the degoog logo with your own custom image - command: !logo",
+      "version": "1.0.0",
+      "type": "command"
     }
   ]
 }

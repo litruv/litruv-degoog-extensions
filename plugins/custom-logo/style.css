@@ -1,0 +1,80 @@
+.custom-logo-img {
+  display: block;
+  max-height: 300px;
+  max-width: 500px;
+  width: auto;
+  object-fit: contain;
+}
+
+.custom-logo-img--search {
+  max-width: 300px;
+}
+
+.custom-logo-upload-ui {
+  padding: 12px 0 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.custom-logo-preview-wrap {
+  display: flex;
+  align-items: center;
+  min-height: 60px;
+}
+
+.custom-logo-preview {
+  max-height: 300px;
+  max-width: 500px;
+  object-fit: contain;
+  border-radius: 6px;
+  border: 1px solid var(--border-light, rgba(255,255,255,0.1));
+  background: var(--bg-tertiary, rgba(0,0,0,0.2));
+  padding: 4px 8px;
+}
+
+.custom-logo-none {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+.custom-logo-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.custom-logo-btn {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid var(--border-light, rgba(255,255,255,0.15));
+  background: var(--bg-secondary, #1e1e2e);
+  color: var(--text-primary, #cdd6f4);
+  transition: background 0.15s;
+  user-select: none;
+}
+
+.custom-logo-btn:hover {
+  background: var(--primary-light, rgba(139,92,246,0.15));
+}
+
+.custom-logo-btn--remove {
+  color: var(--danger, #f38ba8);
+  border-color: var(--danger-light, rgba(243,139,168,0.25));
+}
+
+.custom-logo-btn--remove:hover {
+  background: rgba(243,139,168,0.12);
+}
+
+.custom-logo-status {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  margin: 0;
+  min-height: 1em;
+}
