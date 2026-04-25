@@ -42,6 +42,8 @@ const _saveDimensions = async (dims) => {
   await writeFile(DIMS_PATH, JSON.stringify(dims), "utf-8");
 };
 
+let hideLogoManagement = false;
+
 export default {
   name: "Custom Logo",
   description: "Replace the degoog logo with your own image. Use !logo in the search bar to upload.",
@@ -49,38 +51,54 @@ export default {
 
   settingsSchema: [
     {
-      key: "homeLogoMaxHeight",
-      label: "Home page logo max height (px)",
-      type: "number",
-      default: "300",
-      description: "Maximum height of the custom logo on the home page.",
-    },
-    {
-      key: "homeLogoMaxWidth",
-      label: "Home page logo max width (px)",
-      type: "number",
-      default: "500",
-      description: "Maximum width of the custom logo on the home page.",
-    },
-    {
-      key: "searchLogoMaxHeight",
-      label: "Search page logo max height (px)",
-      type: "number",
-      default: "100",
-      description: "Maximum height of the custom logo on search results pages.",
-    },
-    {
-      key: "searchLogoMaxWidth",
-      label: "Search page logo max width (px)",
-      type: "number",
-      default: "300",
-      description: "Maximum width of the custom logo on search results pages.",
+      key: "hideLogoManagement",
+      label: "Hide logo management",
+      type: "toggle",
+      default: false,
+      description: "Prevent users from uploading or changing the logo (useful for public instances).",
     },
   ],
+
+  configure(settings) {
+    if (typeof settings?.hideLogoManagement === "boolean") {
+      hideLogoManagement = settings.hideLogoManagement;
+    }
+  },
 
   async execute() {
     const [current, dims] = await Promise.all([_load(), _loadDimensions()]);
     const { homeMaxHeight, homeMaxWidth, searchMaxHeight, searchMaxWidth } = dims;
+
+    if (hideLogoManagement) {
+      const homePreviewImg = current
+        ? `<img id="custom-logo-home-preview-img" src="${current}" alt="Home logo preview" style="max-height:${homeMaxHeight}px;max-width:${homeMaxWidth}px;object-fit:contain;display:block;" />`
+        : `<img id="custom-logo-home-preview-img" src="" alt="Home logo preview" style="max-height:${homeMaxHeight}px;max-width:${homeMaxWidth}px;object-fit:contain;display:none;" />`;
+
+      return {
+        title: "Custom Logo",
+        html: `
+          <div id="custom-logo-card" style="padding:14px 16px;display:flex;flex-direction:column;gap:12px;">
+            <div style="background:rgba(0,0,0,0.15);border-radius:8px;padding:20px 16px 24px;display:flex;flex-direction:column;align-items:center;gap:18px;">
+              <span style="font-size:0.7rem;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;color:var(--text-secondary);align-self:flex-start;">Home page preview</span>
+              ${homePreviewImg}
+              <div style="width:100%;max-width:584px;display:flex;flex-direction:column;align-items:stretch;gap:18px;">
+                <div style="display:flex;align-items:center;width:100%;border-radius:24px;border:1px solid rgba(255,255,255,0.15);background:var(--bg-secondary,#1e1e2e);padding:10px 16px;gap:12px;">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="opacity:0.4;flex-shrink:0;">
+                    <circle cx="11" cy="11" r="8"/>
+                    <path d="M21 21l-4.35-4.35"/>
+                  </svg>
+                  <span style="flex:1;font-size:0.95rem;color:var(--text-secondary);user-select:none;"></span>
+                </div>
+                <div style="display:flex;gap:11px;justify-content:center;">
+                  <span style="padding:10px 20px;border-radius:4px;font-size:0.875rem;background:rgba(255,255,255,0.05);color:var(--text-primary);border:1px solid rgba(255,255,255,0.1);user-select:none;font-weight:500;">degoog Search</span>
+                  <span style="padding:10px 20px;border-radius:4px;font-size:0.875rem;background:rgba(255,255,255,0.05);color:var(--text-primary);border:1px solid rgba(255,255,255,0.1);user-select:none;font-weight:500;">I'm Feeling Lucky</span>
+                </div>
+              </div>
+            </div>
+            <p style="font-size:0.82rem;color:var(--text-secondary);margin:0;text-align:center;font-style:italic;">Logo management is disabled on this instance.</p>
+          </div>`,
+      };
+    }
 
     const previewHtml = current
       ? `<img id="custom-logo-preview" src="${current}" alt="Current logo" style="max-height:80px;max-width:220px;object-fit:contain;display:block;border-radius:6px;border:1px solid rgba(255,255,255,0.1);padding:4px 8px;background:rgba(0,0,0,0.2);" />`
@@ -145,6 +163,16 @@ export default {
   },
 
   routes: [
+    {
+      method: "get",
+      path: "/settings",
+      handler: async () => {
+        return new Response(JSON.stringify({ hideLogoManagement }), {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        });
+      },
+    },
     {
       method: "get",
       path: "/logo",

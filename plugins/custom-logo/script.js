@@ -4,6 +4,9 @@
   /** @type {string|null|undefined} */
   let _cachedDataUrl = undefined;
 
+  /** @type {boolean} */
+  let hideLogoManagement = false;
+
   /** @type {number} */
   let _searchMaxHeight = 100;
   /** @type {number} */
@@ -12,6 +15,13 @@
   let _homeMaxHeight = 300;
   /** @type {number} */
   let _homeMaxWidth = 500;
+
+  fetch("/api/plugin/custom-logo/settings")
+    .then((r) => r.json())
+    .then((d) => {
+      hideLogoManagement = d?.hideLogoManagement === true;
+    })
+    .catch(() => {});
 
   fetch("/api/plugin/custom-logo/dimensions")
     .then((r) => r.json())
@@ -129,11 +139,12 @@
    */
   function wireResultUi(root) {
     const fileInput = /** @type {HTMLInputElement|null} */ (root.querySelector("#custom-logo-file"));
+    
+    // If hideLogoManagement is enabled, the management UI won't exist in the card
+    if (!fileInput) return;
+
     const removeBtn = root.querySelector("#custom-logo-remove");
     const status = root.querySelector("#custom-logo-status");
-
-    if (!fileInput || fileInput.dataset.wired) return;
-    fileInput.dataset.wired = "1";
 
     fileInput.addEventListener("change", async () => {
       const file = fileInput.files?.[0];
@@ -268,9 +279,10 @@
 
   const obs = new MutationObserver(() => {
     init();
-    document.querySelectorAll("#custom-logo-file:not([data-wired])").forEach((el) => {
-      const root = /** @type {HTMLElement|null} */ (el.closest("#custom-logo-card") ?? el.parentElement);
-      if (root) wireResultUi(root);
+    document.querySelectorAll("#custom-logo-card:not([data-wired])").forEach((el) => {
+      const root = /** @type {HTMLElement} */ (el);
+      root.dataset.wired = "1";
+      wireResultUi(root);
     });
   });
   obs.observe(document.body, { childList: true, subtree: true });
