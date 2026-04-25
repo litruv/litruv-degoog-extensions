@@ -16,6 +16,9 @@
   /** @type {number} */
   let _homeMaxWidth = 500;
 
+  /** @type {boolean} */
+  let _dimensionsLoaded = false;
+
   fetch("/api/plugin/custom-logo/settings")
     .then((r) => r.json())
     .then((d) => {
@@ -25,16 +28,25 @@
     })
     .catch(() => {});
 
-  fetch("/api/plugin/custom-logo/dimensions")
-    .then((r) => r.json())
-    .then((d) => {
+  /**
+   * @returns {Promise<void>}
+   */
+  async function loadDimensions() {
+    if (_dimensionsLoaded) return;
+    try {
+      const res = await fetch("/api/plugin/custom-logo/dimensions");
+      if (!res.ok) return;
+      const d = await res.json();
       const _p = (v, fb) => { const n = parseInt(v, 10); return !isNaN(n) && n > 0 ? n : fb; };
       _homeMaxHeight = _p(d.homeMaxHeight, 300);
       _homeMaxWidth = _p(d.homeMaxWidth, 500);
       _searchMaxHeight = _p(d.searchMaxHeight, 100);
       _searchMaxWidth = _p(d.searchMaxWidth, 300);
-    })
-    .catch(() => {});
+      _dimensionsLoaded = true;
+    } catch {
+      // Use defaults
+    }
+  }
 
   /**
    * @returns {Promise<string|null>}
@@ -93,6 +105,7 @@
   }
 
   async function init() {
+    await loadDimensions();
     const dataUrl = await fetchLogo();
     if (dataUrl) applyLogo(dataUrl);
   }
@@ -263,6 +276,7 @@
           _homeMaxWidth = dims.homeMaxWidth;
           _searchMaxHeight = dims.searchMaxHeight;
           _searchMaxWidth = dims.searchMaxWidth;
+          _dimensionsLoaded = true;
           document.querySelectorAll(".custom-logo-img--search").forEach((el) => {
             /** @type {HTMLImageElement} */ (el).style.maxHeight = `${_searchMaxHeight}px`;
             /** @type {HTMLImageElement} */ (el).style.maxWidth = `${_searchMaxWidth}px`;
