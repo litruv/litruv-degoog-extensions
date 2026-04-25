@@ -31,6 +31,13 @@
       "description": "Replace the degoog logo with your own custom image - command: !logo",
       "version": "1.1.0",
       "type": "command"
+    },
+    {
+      "path": "engines/deviantart",
+      "name": "DeviantArt",
+      "description": "Search for images on DeviantArt",
+      "version": "1.0.0",
+      "type": "engine"
     }
   ]
 }
