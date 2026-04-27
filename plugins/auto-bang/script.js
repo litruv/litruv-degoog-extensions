@@ -13,6 +13,7 @@
       const val = parseInt(plugin?.settings?.maxSuggestions, 10);
       if (!isNaN(val) && val > 0) maxSuggestions = val;
       if (plugin?.settings?.position === "below") dropdownPosition = "below";
+      initInputs();
     })
     .catch(() => {});
 
@@ -99,7 +100,7 @@
      */
     function render(commands) {
       if (!commands.length) { hide(); return; }
-      selectedIdx = -1;
+      selectedIdx = effectivePosition === "below" ? commands.length : -1;
 
       if (effectivePosition === "below") {
         dropdown.style.bottom = "";
@@ -222,8 +223,4 @@
       if (el) attachBangAutocomplete(el);
     });
   }
-
-  const obs = new MutationObserver(initInputs);
-  obs.observe(document.body, { childList: true, subtree: true });
-  initInputs();
 })();
