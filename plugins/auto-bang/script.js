@@ -167,13 +167,13 @@
         if (selectedIdx < 0) return null;
         return items[items.length - 1 - selectedIdx]?.dataset.trigger ?? null;
       };
-      if (e.key === "ArrowDown") {
+      if (e.key === "ArrowUp") {
         e.preventDefault();
         selectedIdx = Math.min(selectedIdx + 1, items.length - 1);
         updateHighlight();
         const t = selectedTrigger();
         if (t) input.value = `!${t} `;
-      } else if (e.key === "ArrowUp") {
+      } else if (e.key === "ArrowDown") {
         e.preventDefault();
         selectedIdx = Math.max(selectedIdx - 1, -1);
         updateHighlight();
