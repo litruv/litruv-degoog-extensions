@@ -5,6 +5,7 @@ Small collection of plugins by Litruv
 
 Forget what that command was? Auto-bang will help out by searching your commands for you! Searches by command + the flavor text.
 
+Thanks [@kris701](https://github.com/kris701) for the bugfix!
 
 ## Plex search
 <img width="700" alt="image" src="https://github.com/user-attachments/assets/2358bad7-c7d5-4ab9-8478-eaac4d1691a4" />
