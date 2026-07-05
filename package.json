@@ -28,8 +28,8 @@
     {
       "path": "plugins/custom-logo",
       "name": "Custom Logo",
-      "description": "Replace the degoog logo with your own custom image - command: !logo",
-      "version": "1.3.0",
+      "description": "Replace the degoog logo with your own image(s) and optional rotation - command: !logo",
+      "version": "1.4.0",
       "type": "command"
     },
     {
