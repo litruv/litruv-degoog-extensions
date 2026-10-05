@@ -4,6 +4,8 @@ let plexUrl = "";
 let apiKey = "";
 let machineId = "";
 let template = "";
+/** @type {((url: string) => string) | null} */
+let signProxyUrl = null;
 
 const PLEX_LOGO =
   "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons@refs/heads/main/svg/plex.svg";
@@ -102,9 +104,14 @@ function renderItem(item) {
   const badges = `<span class="result-engine-tag">${escHtml(type)}</span><span class="result-engine-tag">Plex</span>`;
 
   const thumbPath = item.thumb || item.art || "";
-  const thumbSrc = thumbPath
-    ? `/api/proxy/image?auth_id=${PLEX_PLUGIN_ID}&url=${encodeURIComponent(`${plexUrl}${thumbPath}?X-Plex-Token=${apiKey}`)}`
-    : "";
+  // degoog's /api/proxy/image now rejects unsigned URLs (403), so sign via the
+  // host-provided ctx.signProxyUrl; the old auth_id form is kept as a fallback.
+  const thumbTarget = `${plexUrl}${thumbPath}?X-Plex-Token=${apiKey}`;
+  const thumbSrc = !thumbPath
+    ? ""
+    : signProxyUrl
+      ? signProxyUrl(thumbTarget)
+      : `/api/proxy/image?auth_id=${PLEX_PLUGIN_ID}&url=${encodeURIComponent(thumbTarget)}`;
   const thumbBlock = thumbSrc
     ? `<div class="result-thumbnail-wrap"><img class="result-thumbnail-img" src="${escHtml(thumbSrc)}" alt=""></div>`
     : "";
@@ -207,9 +214,10 @@ export default {
     },
   ],
 
-  /** @param {{ template: string }} ctx */
+  /** @param {{ template: string, signProxyUrl?: (url: string) => string }} ctx */
   init(ctx) {
     template = ctx.template;
+    if (ctx.signProxyUrl) signProxyUrl = ctx.signProxyUrl;
   },
 
   /** @param {{ url: string, apiKey: string }} settings */
